@@ -1,0 +1,1 @@
+INSERT INTO user (created_at, updated_at, active, email, login, name, password, profile_level) VALUES (now(), now(), 1, 'admin@imdb.com.br', 'admin', 'Administrator', '$2y$10$x419T6.zc15IECs/7HSlp.Y5DVLUp2w4AfVRSSu0nD6q8acfH4i9a', 0);

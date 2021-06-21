@@ -1,0 +1,38 @@
+version: '3.4'
+x-common-variables: &common-variables
+  MYSQL_DATABASE: "imdb_production"
+  MYSQL_ROOT_PASSWORD: "123456789"
+  MYSQL_USER: "imdb"
+  MYSQL_PASSWORD: "123"
+  TZ: "America/Sao_Paulo"
+services:
+  api:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    image: ioasys/imdb
+    container_name: imdb-api
+    ports:
+      - '8180:8080'
+      - '5105:5005'
+    depends_on:
+      db:
+        condition: service_healthy  
+    environment:
+      <<: *common-variables
+      ADDITIONAL_OPTS: "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xmx256m -Xms128m -XX:MaxMetaspaceSize=128m"
+      PROFILE: "production"
+    links:
+      - db
+  db:
+    image: mysql:5.7.34
+    container_name: imdb-database
+    ports:
+      - '3315:3306'
+    environment: *common-variables
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 30s
+      retries: 5
+    volumes:
+    - ${PWD}/imdb-mysql:/var/lib/mysql
